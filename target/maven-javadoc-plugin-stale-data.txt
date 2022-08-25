@@ -1,0 +1,59 @@
+@options
+@packages
+@argfile
+-encoding
+'UTF-8'
+-protected
+-source
+'18'
+-sourcepath
+'E:/mavenproject2/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2022. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'E:/mavenproject2/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'mavenproject2 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'mavenproject2 1.0-SNAPSHOT API'
+AssMangerStudent
+model
+view
+'E:/mavenproject2/src/main/java/AssMangerStudent/AssMangerStudent.java'
+'E:/mavenproject2/src/main/java/model/Grade.java'
+'E:/mavenproject2/src/main/java/model/GradeDAO.java'
+'E:/mavenproject2/src/main/java/model/Student.java'
+'E:/mavenproject2/src/main/java/model/StudentDao.java'
+'E:/mavenproject2/src/main/java/model/User.java'
+'E:/mavenproject2/src/main/java/model/UserDao.java'
+'E:/mavenproject2/src/main/java/view/FrMainForm.java'
+'E:/mavenproject2/src/main/java/view/LoginJDialog.java'
+'E:/mavenproject2/src/main/java/view/PointmanagementDialog.java'
+'E:/mavenproject2/src/main/java/view/StudentDialog.java'
+E:\mavenproject2\src\main\java = 1661394767001
+E:\mavenproject2\target\apidocs\allclasses-index.html = 1661403062832
+E:\mavenproject2\target\apidocs\allpackages-index.html = 1661403062835
+E:\mavenproject2\target\apidocs\copy.svg = 1661403085998
+E:\mavenproject2\target\apidocs\element-list = 1661403062052
+E:\mavenproject2\target\apidocs\help-doc.html = 1661403062914
+E:\mavenproject2\target\apidocs\index-all.html = 1661403062908
+E:\mavenproject2\target\apidocs\index.html = 1661403062797
+E:\mavenproject2\target\apidocs\jquery-ui.overrides.css = 1661403091796
+E:\mavenproject2\target\apidocs\member-search-index.js = 1661403062837
+E:\mavenproject2\target\apidocs\module-search-index.js = 1661403062835
+E:\mavenproject2\target\apidocs\overview-summary.html = 1661403062910
+E:\mavenproject2\target\apidocs\overview-tree.html = 1661403062793
+E:\mavenproject2\target\apidocs\package-search-index.js = 1661403062836
+E:\mavenproject2\target\apidocs\script.js = 1661403084539
+E:\mavenproject2\target\apidocs\search.js = 1661403086048
+E:\mavenproject2\target\apidocs\serialized-form.html = 1661403062137
+E:\mavenproject2\target\apidocs\stylesheet.css = 1661403065978
+E:\mavenproject2\target\apidocs\tag-search-index.js = 1661403062892
+E:\mavenproject2\target\apidocs\type-search-index.js = 1661403062836
