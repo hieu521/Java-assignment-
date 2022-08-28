@@ -28,7 +28,6 @@ public class FrMainForm extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -46,20 +45,11 @@ public class FrMainForm extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton1);
-        jButton1.setBounds(164, 66, 148, 22);
-
-        jButton2.setText("Point Management ");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton2);
-        jButton2.setBounds(459, 66, 134, 22);
+        jButton1.setBounds(330, 70, 138, 25);
 
         jLabel2.setIcon(new javax.swing.ImageIcon("E:\\Hinh\\anhnen1.PNG")); // NOI18N
         getContentPane().add(jLabel2);
-        jLabel2.setBounds(0, 106, 950, 570);
+        jLabel2.setBounds(0, 106, 840, 570);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -69,12 +59,6 @@ public class FrMainForm extends javax.swing.JFrame {
         StudentDialog sv= new StudentDialog(this, true);
         sv.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        PointmanagementDialog pm = new PointmanagementDialog(this,true );
-        pm.setVisible(true);
-    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -113,7 +97,6 @@ public class FrMainForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables

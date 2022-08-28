@@ -4,18 +4,19 @@
  */
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author This PC
  */
-public class Student {
+public class Student implements Serializable{
     
     private String ID;
     private String Name;
     private String BrithDate;
-    private boolean Sex;
+    private String Sex;
     private String Address;
     private String Image; 
     
@@ -29,13 +30,17 @@ public class Student {
     }
     
 
-    public Student(String ID, String Name, String BrithDate, boolean Sex, String Address, String Image) {
+    public Student(String ID, String Name, String BrithDate, String Sex, String Address, String Image) {
         this.ID = ID;
         this.Name = Name;
         this.BrithDate = BrithDate;
         this.Sex = Sex;
         this.Address = Address;
         this.Image = Image;
+    }
+
+    Student(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
    
@@ -66,11 +71,11 @@ public class Student {
         this.BrithDate = BrithDate;
     }
 
-    public boolean isSex() {
+    public String isSex() {
         return Sex;
     }
 
-    public void setSex(boolean Sex) {
+    public void setSex(String Sex) {
         this.Sex = Sex;
     }
 

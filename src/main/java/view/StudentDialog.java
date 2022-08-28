@@ -4,23 +4,30 @@
  */
 package view;
 
+import helper.FileHelper;
 import java.awt.Image;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.tools.FileObject;
 import model.Student;
 import model.StudentDao;
-
-
 
 /**
  *
@@ -28,30 +35,52 @@ import model.StudentDao;
  */
 public class StudentDialog extends javax.swing.JDialog {
 
-    SimpleDateFormat date_Format = new SimpleDateFormat ("dd/MM/yyyy");
+    SimpleDateFormat date_Format = new SimpleDateFormat("dd/MM/yyyy");
     StudentDao dao = new StudentDao();
     String strImage = null;
+    int curIdx = -1;
+    DefaultTableModel tblM = null;
+
     /**
      * Creates new form StudentDialog
      */
     public StudentDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        initTable();
+//        getStudentData();
+//          fillDataTable();
+        loadDataToTable();
     }
-    public void fillDataTable(){
-        DefaultTableModel model= (DefaultTableModel)tbStudent.getModel();
-        model.setRowCount(0);
-        for (Student s : dao.getAllStudents()){
-            Object rowData[]=new Object[6];
-            
-            rowData[0]= s.getID();
-            rowData[1]= s.getName();
-            rowData[2]= s.isSex()?"Male":"Female";
-            rowData[3]= s.getBrithDate();
-            rowData[4]= s.getAddress();
-            rowData[5]= s.getImage();
-            model.addRow(rowData);
-            
+
+//    public void fillDataTable() {
+//        DefaultTableModel model = (DefaultTableModel) tbStudent.getModel();
+//        
+//        model.setRowCount(0);
+//        for (Student s : dao.getAllStudents()) {
+//            Object rowData[] = new Object[6];
+//
+//            rowData[0] = s.getID();
+//            rowData[1] = s.getName();
+//            rowData[2] = s.isSex();
+//            rowData[3] = s.getBrithDate();
+//            rowData[4] = s.getAddress();
+//            rowData[5] = s.getImage();
+//            model.addRow(rowData);
+//
+//            
+//
+//        }
+//    }
+    
+    
+    public void loadDataToTable() {
+        try {
+            dao.LoadFormFile();
+            dao.renderToTable(tblM);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Load file error!");
         }
     }
 
@@ -92,6 +121,10 @@ public class StudentDialog extends javax.swing.JDialog {
         BtnDelete = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tbStudent = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        txtFind = new javax.swing.JTextField();
+        btnFind = new javax.swing.JButton();
+        btnExitandSave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(0, 204, 204));
@@ -225,7 +258,7 @@ public class StudentDialog extends javax.swing.JDialog {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addGap(34, 34, 34)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(BtnCreate)
                     .addComponent(BtnUpdate))
@@ -233,12 +266,12 @@ public class StudentDialog extends javax.swing.JDialog {
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(BtnDelete)
                     .addComponent(BtnSave))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BtnCreate)
                     .addComponent(BtnSave))
@@ -246,7 +279,7 @@ public class StudentDialog extends javax.swing.JDialog {
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BtnUpdate)
                     .addComponent(BtnDelete))
-                .addGap(17, 17, 17))
+                .addContainerGap())
         );
 
         tbStudent.setModel(new javax.swing.table.DefaultTableModel(
@@ -267,6 +300,42 @@ public class StudentDialog extends javax.swing.JDialog {
         });
         jScrollPane2.setViewportView(tbStudent);
 
+        btnFind.setText("Find");
+        btnFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnFind)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(12, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFind))
+                .addContainerGap())
+        );
+
+        btnExitandSave.setBackground(new java.awt.Color(0, 204, 204));
+        btnExitandSave.setText("Off");
+        btnExitandSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitandSaveActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -279,27 +348,38 @@ public class StudentDialog extends javax.swing.JDialog {
                         .addGap(48, 48, 48)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnExitandSave))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(236, 236, 236)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 341, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 182, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1098, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnExitandSave)
+                                .addGap(8, 8, 8))))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -313,7 +393,7 @@ public class StudentDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_TxtIDStudentActionPerformed
 
-    public void reset(){
+    public void reset() {
         txtAddress.setText("");
         TxtIDStudent.setText("");
         TxtBrithday.setText("");
@@ -325,136 +405,251 @@ public class StudentDialog extends javax.swing.JDialog {
     }
     private void BtnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnCreateActionPerformed
         // TODO add your handling code here:
-       reset();
-      
+        reset();
+
     }//GEN-LAST:event_BtnCreateActionPerformed
 
     private void BtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnDeleteActionPerformed
         // TODO add your handling code here:
-        if(TxtIDStudent.getText().isEmpty()){
-            JOptionPane.showMessageDialog(this, "You have not entered the student code to delete");
-        
-        }
-        else{
-            if (dao.delStudentByID(TxtIDStudent.getText())>0){
-                JOptionPane.showMessageDialog(this, "Delet Succesfull");
-                fillDataTable();
-            }
-            else{
-                JOptionPane.showMessageDialog(this, "Don't find the student to delete");
-            }
-        }
+      try{
+          boolean isOk = dao.delStudentByID(TxtIDStudent.getText());
+          if(isOk){
+              dao.renderToTable(tblM);
+              JOptionPane.showMessageDialog(this, "Student deleted!");
+              dao.saveFile();
+              
+          }
+          else{
+              JOptionPane.showMessageDialog(this, "Student id is not exited or delete fail!");
+              
+          }
+              
+      }catch (Exception e){
+          JOptionPane.showMessageDialog(this, "Error:  " +e.getMessage());
+      }
+              
     }//GEN-LAST:event_BtnDeleteActionPerformed
 
     private void lblImageMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImageMouseClicked
         // TODO add your handling code here:
-       try{ 
-        JFileChooser jfc =new JFileChooser();
-        jfc.showOpenDialog(null);
-        File file = jfc.getSelectedFile();
-        Image img = ImageIO.read(file);
-        strImage=file.getName();
-        lblImage.setText("");
-        int width= lblImage.getWidth();
-        int height= lblImage.getHeight();
-        lblImage.setIcon(new ImageIcon(img.getScaledInstance(width,height,0)));
-        
-           }catch(IOException ex){
-               System.out.println("Error:"+ex.toString());
-           }
-        
+        try {
+            JFileChooser jfc = new JFileChooser();
+            jfc.showOpenDialog(null);
+            File file = jfc.getSelectedFile();
+            Image img = ImageIO.read(file);
+            strImage = file.getName();
+            lblImage.setText("");
+            int width = lblImage.getWidth();
+            int height = lblImage.getHeight();
+            lblImage.setIcon(new ImageIcon(img.getScaledInstance(width, height, 0)));
+
+        } catch (IOException ex) {
+            System.out.println("Error:" + ex.toString());
+        }
+
     }//GEN-LAST:event_lblImageMouseClicked
-    public boolean validateForm(){
-        if(TxtIDStudent.getText().isEmpty()|| TxtNameStudent.getText().isEmpty()){
+
+    public boolean validateForm() {
+        if (TxtIDStudent.getText().isEmpty() || TxtNameStudent.getText().isEmpty()) {
             return false;
         }
-        if ( TxtBrithday.getText().isEmpty() || txtAddress.getText().isEmpty()) {
+        if (TxtBrithday.getText().isEmpty() || txtAddress.getText().isEmpty()) {
             return false;
-        }      
-return true;
+        }
+        return true;
     }
-    public Student getModel()throws ParseException{
+
+    public Student getModel() throws ParseException {
         Student s = new Student();
         s.setID(TxtIDStudent.getText());
         s.setName(TxtNameStudent.getText());
-        boolean gt =false;
+        String gt = null;
         if (rdMale.isSelected()) {
-            gt = true;
+            gt = rdMale.getText().trim();
+        } else {
+            gt = rdFemale.getText().trim();
         }
         s.setSex(gt);
         s.setAddress(txtAddress.getText());
         s.setBrithDate(TxtBrithday.getText());
-        
-        if(strImage == null){
+
+        if (strImage == null) {
             s.setImage("No Avatar");
-        }
-        else{
+        } else {
             s.setImage(strImage);
         }
         return s;
-        
+
     }
     private void BtnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnSaveActionPerformed
         // TODO add your handling code here:
-        if(validateForm()){
+        if (validateForm()) {
             try {
-                Student s= getModel();
-                if(dao.add(s)>0){
-                    JOptionPane.showMessageDialog(this, "Save successfull");
-                    fillDataTable();
+//                BtnCreateActionPerformed(evt);
+//                dao.renderToTable(tblM);
+                Student s = getModel();
+                if (!dao.CheckBirthday(s.getBrithDate())) {
+                    JOptionPane.showMessageDialog(this, "Plsss check again");
+
+                    return;
                 }
-               } catch (ParseException ex) {
+                if (!dao.CheckNameValid(s.getName())) {
+                    JOptionPane.showMessageDialog(this, "Check Name Plss");
+                    return;
+                }
+
+                if (dao.getStudentByID(s.getID()) != null) {
+                    JOptionPane.showMessageDialog(this, "student exits!");
+                    return;
+                }
+                if (dao.add(s)>0) {
+                    JOptionPane.showMessageDialog(this, "Save successfull");
+                   dao.renderToTable(tblM);
+                    try {
+                    dao.saveFile();
+                  } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error file: " + e.getMessage());
+                }
+                }
+
+            } catch (ParseException ex) {
                 Logger.getLogger(StudentDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "You have not entered complete information");
         }
     }//GEN-LAST:event_BtnSaveActionPerformed
 
-    public void setModel (Student s){
+    public void setModel(Student s) {
         TxtIDStudent.setText(s.getID());
         TxtNameStudent.setText(s.getName());
 //        TxtBrithday.setText(date_Format.format(s.getBrithDate()));
         TxtBrithday.setText(s.getBrithDate());
         txtAddress.setText(s.getAddress());
-        boolean gt =s.isSex();
-        if(s.isSex()){
-            rdMale.isSelected();
-        }else{
-            rdFemale.isSelected();
+        String gt = s.isSex();
+        if (rdMale.isSelected()) {
+            gt = rdMale.getText().trim();
+        } else {
+            gt = rdFemale.getText().trim();
         }
-        if(s.getImage().equalsIgnoreCase("no avata")){
+        if (s.getImage().equalsIgnoreCase("no avata")) {
             lblImage.setText("NO AVATAR");
             lblImage.setIcon(null);
+        } else {
+            lblImage.setText("");
+            ImageIcon imgIcon = new ImageIcon(getClass().getResource("/images/" + s.getImage()));
+            Image img = imgIcon.getImage();
+            img.getScaledInstance(lblImage.getWidth(), lblImage.getY(), 0);
         }
-        else{
-        lblImage.setText("");
-        ImageIcon imgIcon= new ImageIcon(getClass().getResource("/images/"+s.getImage()));
-        Image img= imgIcon.getImage();
-        img.getScaledInstance(lblImage.getWidth(),lblImage.getY(),0);
-        }
-        
+
     }
-    
+
     private void tbStudentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbStudentMouseClicked
         // TODO add your handling code here:
-        int id =tbStudent.rowAtPoint(evt.getPoint());
-        String ID= tbStudent.getValueAt(id, 0).toString();
+        int id = tbStudent.rowAtPoint(evt.getPoint());
+        String ID = tbStudent.getValueAt(id, 0).toString();
         Student s = dao.getStudentByID(ID);
         setModel(s);
+
     }//GEN-LAST:event_tbStudentMouseClicked
 
+//    private void fOpen() {
+//        curIdx = -1;
+//        readFile();
+//        fillDataTable();
+//
+//    }
     private void BtnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnUpdateActionPerformed
         // TODO add your handling code here:
-       
-       
+        if (validateForm()){
+            
+            try {
+                Student s = getModel();
+                if (dao.updateStudentByID(s)>0){
+                    JOptionPane.showMessageDialog(this, "Update Successfull");
+                    dao.renderToTable(tblM);
+                    try {
+                        dao.saveFile();
+                    } catch (Exception ex) {
+                        Logger.getLogger(StudentDialog.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
+            } catch (ParseException ex) {
+                Logger.getLogger(StudentDialog.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            }else{
+            JOptionPane.showMessageDialog(this, "You not input information");
+        }
+            
+        
+        
+
     }//GEN-LAST:event_BtnUpdateActionPerformed
 
     private void TxtNameStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtNameStudentActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TxtNameStudentActionPerformed
 
-  
+    private void fillStdToForm(Student s) {
+        TxtIDStudent.setText(s.getID());
+        TxtNameStudent.setText(s.getName());
+        TxtBrithday.setText(s.getBrithDate());
+         
+        txtAddress.setText(s.getAddress());
+        
+        
+        lblImage.setText(s.getImage());
+       
+
+    }
+
+    private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindActionPerformed
+        // TODO add your handling code here:
+        try {
+            Student std = dao.getStudentByID(txtFind.getText());
+            if (std == null) {
+                JOptionPane.showMessageDialog(this, "ID does not exits!");
+            } else {
+                fillStdToForm(std);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error search: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnFindActionPerformed
+
+    private void btnExitandSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitandSaveActionPerformed
+        // TODO add your handling code here:
+        try {
+            dao.saveFile();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error file: " + e.getMessage());
+        }
+        System.exit(0);
+    }//GEN-LAST:event_btnExitandSaveActionPerformed
+
+    public void initTable() {
+        tblM = new DefaultTableModel();
+        
+        tblM.setColumnIdentifiers(new Object[] {
+            "Id", "Name", "Gender", "Birthday", "Address","Image"
+        });
+        tbStudent.setModel(tblM);
+    }
+    
+//     getDataFrom File
+//    public void getStudentData() {
+//        try {
+//            readFile();
+////            dao.updateDataTable(tblM);
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, "fail to get data from file");
+//        }
+//    }
+   
+
     /**
      * @param args the command line arguments
      */
@@ -462,7 +657,7 @@ return true;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -505,6 +700,8 @@ return true;
     private javax.swing.JTextField TxtBrithday;
     private javax.swing.JTextField TxtIDStudent;
     private javax.swing.JTextField TxtNameStudent;
+    private javax.swing.JButton btnExitandSave;
+    private javax.swing.JButton btnFind;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -514,6 +711,7 @@ return true;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -526,5 +724,6 @@ return true;
     private javax.swing.JCheckBox rdMale;
     private javax.swing.JTable tbStudent;
     private javax.swing.JTextArea txtAddress;
+    private javax.swing.JTextField txtFind;
     // End of variables declaration//GEN-END:variables
 }

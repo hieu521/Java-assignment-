@@ -11,4 +11,5 @@
         <maven.compiler.target>18</maven.compiler.target>
         <exec.mainClass>edu.poly.mavenproject2.Mavenproject2</exec.mainClass>
     </properties>
+    <name>ProjectStudent</name>
 </project>
